@@ -1,1 +1,125 @@
+##THIS IMPORTS THE PATH CLASS IN PATHLIB AND IMPORTS CSV MODULE TO HANDLE OUR FILES##
+from pathlib import Path
+import csv
 
+
+def profitAndloss_function():
+
+    """
+
+    -FUNCTION READS FINANCIAL DATA FROM "PROFIT_AND_LOSS.CSV" FILE, 
+    SPECIFICALLY THE NET PROFIT FOR EACH DAY 
+    -IDENTIFIES AND CALCULATES NET PROFIT DEFICITS, CATEGORIZES AND RANKS TOP THREE 
+    HIGHEST DEFICITS (IF DEFICITS EXIST) 
+    -OUTPUT IS WRITTEN AS A FORMATTED STRING IN "SUMMARY_REPORT.TXT"
+    -NO INPUT PARAMETERS REQUIRED
+
+    """
+
+    #CREATION OF FILE PATH#
+    #FILE PATH CREATED TO CASH_ON_HAND.CSV TO RETRIEVE DATA#
+    fp_read = Path.cwd() / "csv_reports" / "Profit_and_Loss.csv"
+
+    #CREATION OF FILE PATH TO SUMMARY_REPORT.TXT FILE IN WORKING DIRECTORY CURRENTLY
+    #.cwd() UTILIZED TO OBTAIN A WORKING DIRECTORY
+    fp_write = Path.cwd() / "summary_report.txt"
+
+    #THIS WOULD READ DATA IN THE OVERHEADS.CSV FILE WITH UTF-8 ENCODING 
+    with fp_read.open(mode="r", encoding="UTF-8", newline="") as file:
+        #CREATES A CSV.READER CALLED READER TO READ DATA IN FILE WHICH IS OPENED
+        reader = csv.reader(file)
+        #SKIPS FIRST ROW OF CSV FILE WHICH IS THE HEADER
+        next(reader) 
+        #READS DATA INTO LIST, CONVERTING DAY INTO INTEGER & CASH ON HAND TO FLOAT
+        net_profit = [[int(row[0]), int(row[4])] for row in reader]
+
+   
+    #INITIALIZE EMPTY LISTS TO STORE AND KEEP TRACK OF ALL DEFICITS 
+    all_deficits = []
+
+    #LOOP ITERATES ON THE RANGE OF DAYS (DAY11-DAY90) IN PROFIT_AND_LOSS LIST
+    for day in range(1, len(net_profit)):
+
+        #RETRIEVES AMT. OF NET PROFIT ON CURRENT DAY FROM LIST CONTAINING NET PROFIT 
+        #STORED IN INDEX 1 (2ND COLUMN) OF DATA LIST OF EACH DAY 
+        current_profit = net_profit[day][1]
+
+        #RETRIEVES AMT. OF NET PROFIT ON PREVIOUS DAY FROM LIST CONTAINING NET PROFIT
+        previous_profit = net_profit[day - 1][1]
+
+        #CHECKS IF CURRENT DAY NET PROFIT AMT IS LESS THAN PREV. DAY NET PROFIT AMT.
+        if current_profit < previous_profit:
+
+            #CALCULATES DEFICIT WITH THE SUBTRACTION OF NET PROFIT AMT. FROM CURRENT DAY FROM THAT OF THE PREV.DAY 
+            deficit = previous_profit - current_profit
+
+            #IF NET PROFIT IS PRESENT, INDEX OF CURRENT DAY AND DEFICIT AMT. STORED TO DEFICIT LIST
+            all_deficits.append([net_profit[day][0], deficit])  
+
+    #SORTS LIST OF DEFICITS BY DAY IN ASCENDING ORDER 
+    all_deficits.sort()
+
+    #INITIALIZSES A LIST WITH THREE SUBLISTS, EACH CONTAINING TWO ZEROS,
+    #TO STORE INFORMATION ABOUT THE TOP THREE DEFICITS(BY AMOUNT) LATER ON IN THE CODE
+    top_deficits = [[0, 0], [0, 0], [0, 0]]  #THIS HOLDS TOP THREE DEFICITS
+
+    #THIS "FOR" LOOP FINDS THE TOP THREE DEFICITS BY ITS AMOUNT 
+    #CHECKS IF AMT. OF CURRENT DEFICIT IS LARGER THAN ANY DEFICITS IN 'TOP_DEFICITS'
+    #IF IT IS LARGER, CURRENT DEFICIT IS INSERTED INTO CORRECT POSITION IN 'TOP_DEFICITS' 
+    #WHILE THE OTHER SMALLER DEFICITS WILL BE SHIFTED DOWN 
+    for deficit in all_deficits:
+        if deficit[1] > top_deficits[0][1]:
+            top_deficits[2] = top_deficits[1]
+            top_deficits[1] = top_deficits[0]
+            top_deficits[0] = deficit
+        elif deficit[1] > top_deficits[1][1]:
+            top_deficits[2] = top_deficits[1]
+            top_deficits[1] = deficit
+        elif deficit[1] > top_deficits[2][1]:
+            top_deficits[2] = deficit
+
+    #INITIALIZES EMPTY STRING VARIABLE IN ORDER TO STORE THE GENERATED SUMMARY REPORT
+    output = ""
+
+    #THIS "FOR" LOOP GOES THROUGH "ALL_DEFICITS" LIST WHICH IS SORTED BY DAY 
+    #AND APPENDS A FORMATTED STRING FOR EACH DEFICIT TO THE OUTPUT VAR.
+    #EACH LINE IN OUTPUT IS FORMATTED TO STATE THE DAY AND AMT. OF THE CASH DEFICIT 
+    for day, amount in all_deficits:
+        output += f"[NET PROFIT DEFICIT] DAY: {day}, AMOUNT: SGD{amount}\n"
+    
+    #ADDS A NEWLINE AS A SEPARATOR
+    output += "\n"  
+
+    #THIS WOULD LABEL THE TOP THREE HIGHEST DEFICITS 
+    rank_labels = ["HIGHEST", "2ND HIGHEST", "3RD HIGHEST"]
+
+    #THIS WILL OUTPUT THE TOP THREE DEFICITS IF THEY EXIST 
+
+
+    #IN EACH ITERATION OF THE LOOP, THE VARIABLE 'INDEX' TAKES ON THE CURRENT VALUE, 
+    #STARTING FROM 0 AND INCREASING BY 1 IN EACH ITERATION.
+    #INDEX USED TO ACCESS CORRESPONDING ELEMENTS IN 'RANK_LABELS' AND 'TOP_DEFICITS' LIST
+
+
+    #IN THIS LOOP, THE TWO VARIABLES - DAY AND AMOUNT ARE ASSIGNED VALUES BY EXTRACTING DATA FROM THE
+    #'TOP_DEFICITS' LIST USING THE CURRENT 'INDEX' 
+    #IT RETRIEVES THE INDEX ELEMENTH OF THE 'TOP_DEFICITS' LIST AND UNPACKS IT INTO 'DAY' AND 'AMOUNT'
+
+    #LOOP CONTINUES TO NEXT ITERATION, REPEATS PROCESS FOR EACH CASH DEFIICT IN THE 'RANK_LABELS' LIST
+    
+    for index in range(len(rank_labels)): #LEN(RANK_LABEL) FUNCTION RETURNS NO. OF ELEMENTS "RANK_LABEL" LIST
+                                          #RANGE() GENERATES A SEQUENCE OF NUMBERS FROM 0 TO LENGTH OF LIST
+                                          #SO THE LOOP ITERATES FROM 0 TO LEN(RANK_LABEL)-1
+        day, amount = top_deficits[index]
+        #OUTPUT OF FORMATTED STRING
+        output += f"[{rank_labels[index]} CASH DEFICIT] DAY: {day}, AMOUNT: SGD{amount}\n"
+
+    #OPENS WRITE MODE IN 'SUMMARY_REPORT.TXT' FILE 
+    with fp_write.open(mode="w", encoding="UTF-8") as summary_file:
+        #WRITES OUTPUT VARIABLE TO SUMMARY_REPORT.TXT" FILE 
+        summary_file.write(output)
+
+    return output
+
+#NAMING FUNCTION TO DOUBLE-CHECK ACTUAL OUTPUT
+print(profitAndloss_function())
