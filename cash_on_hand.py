@@ -71,3 +71,14 @@ def cashOnHand_function():
     #INITIALIZSES A LIST WITH THREE SUBLISTS, EACH CONTAINING TWO ZEROS,
     #TO STORE INFORMATION ABOUT THE TOP THREE DEFICITS(BY AMOUNT) LATER ON IN THE CODE
     top_deficits = [[0, 0], [0, 0], [0, 0]]
+#THIS "FOR" LOOP FINDS THE TOP THREE DEFICITS BY ITS AMOUNT 
+    #CHECKS IF AMT. OF CURRENT DEFICIT IS LARGER THAN ANY DEFICITS IN 'TOP_DEFICITS'
+    #IF IT IS LARGER, CURRENT DEFICIT IS INSERTED INTO CORRECT POSITION IN 'TOP_DEFICITS' 
+    #WHILE THE OTHER SMALLER DEFICITS WILL BE SHIFTED DOWN 
+    for deficit in all_deficits:
+        if deficit[1] > top_deficits[0][1]:
+            top_deficits[2] = top_deficits[1]
+            top_deficits[1] = top_deficits[0]
+            top_deficits[0] = deficit
+        elif deficit[1] > top_deficits[1][1]:
+            top_deficits[2] = top_deficits[1]
