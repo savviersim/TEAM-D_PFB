@@ -25,7 +25,7 @@ def main():
     file.write('Summary Report\n==============================\n')
 
     #FUNCTION_OVERHEADS() IN OVERHEADS MODULE CALLED TO BE EXECUTED, TO CALCULATE, AND WRITE HIGHEST OVERHEAD INTO SUMMARYREPORT.TXT
-    file.write(overheads.function_overheads()) 
+    file.write(overheads.function_overheads()+ "\n") 
 
     #PROFITANDLOSS_FUNCTION() IN PROFITS AND LOSS MODULE CALLED TO BE EXECUTED, 
     #TO CALCULATE, AND WRITE NET PROFIT DEFICITS/ SURPLUS INTO SUMMARYREPORT.TXT
