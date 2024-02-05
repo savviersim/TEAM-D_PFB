@@ -82,3 +82,56 @@ def cashOnHand_function():
             top_deficits[0] = deficit
         elif deficit[1] > top_deficits[1][1]:
             top_deficits[2] = top_deficits[1]
+
+#THIS "FOR" LOOP GOES THROUGH "ALL_DEFICITS" LIST WHICH IS SORTED BY DAY 
+    #AND APPENDS A FORMATTED STRING FOR EACH DEFICIT TO THE OUTPUT VAR.
+    #EACH LINE IN OUTPUT IS FORMATTED TO STATE THE DAY AND AMT. OF THE CASH DEFICIT 
+    for day, amount in all_deficits:
+        output += f"[CASH DEFICIT] DAY: {day}, AMOUNT: SGD{int(amount)}\n"
+
+    #THIS WILL OUTPUT THE TOP THREE DEFICITS IF THEY EXIST,
+    #THIS LINE CHECKS THE IF THE AMT. OF THE HIGHEST CASH DEFICIT (FIRST ELEMENT OF 'TOP_DEFICITS' LIST, ACCESSED USING [0]),
+    #IS GREATER THAN 0 -> CONDITION USED TO ENSURE THAT THERE IS AT LEAST ONE CASH DEFICIT WITH A POSITIVE,
+    #AMOUNT BEFORE ATTEMPTING TO GENERATE THE OUTPUT MESSAGES.
+    if top_deficits[0][1] > 0:
+
+        #ORDINAL LIST CREATED CONTAINING '1ST HIGHEST', '2ND HIGHEST', AND '3RD HIGHEST',
+        #THESE LABELS USED TO DESCRIBE THE ORDINAL RANKING OF THESE CASH DEFICITS.
+        ordinal = ['HIGHEST', '2ND HIGHEST', '3RD HIGHEST']
+
+        #INDEX REPRESENTS RANKING OF THE CURRENT CASH DEFICIT 
+        for index, (day, amount) in enumerate(top_deficits): #ENUMERATE() USED AS IT CREATES AND RETURN A NEW OBJECT,
+                                                         #INSTEAD OF VALUES, AND IS A METHOD TO REQUIRED TO RETRIEVE A VALUE,
+                                                         #OF AN ENUMERATE OBJECT- USED TO GET BOTH INDEX,
+                                                         #(which corresponds to the ordinal ranking) & (day, amount) FROM top_deficits,
+                                                         #ALLOWS US TO ACCESS BOTH DAY AND AMOUNT ACCORDING TO THEIR RANKING
+            
+            #OUTPUT OF A FORMATTED STRING WILL BE GIVEN 
+            #[{ORDINAL[INDEX]}CASH DEFICIT] CONSTRUCTED BY TAKING THE LABEL CORRESPONDING TO THE ORDINAL,
+            #RANKING 9EG.'HIGHEST', '2ND HIGHEST' EG.) BASED ON THE INDEX VARIABLE 
+            output += f"\n[{ordinal[index]} CASH DEFICIT] DAY: {day}, AMOUNT: SGD{int(amount)}"
+            
+
+
+    #IF DEFICIT_DAYS LIST IS EMPTY, THE FOLLOWING WILL BE EXECUTED
+    if not deficits_days and cash_on_hand:
+        surplus_day = cash_on_hand[-1][0]
+        highest_surplus = int(cash_on_hand[-1][1] - cash_on_hand[0][1])
+
+        #FORMATTED STRING APPENDED TO SHOW THAT ALL CASH AMT. ON EACH DAY IS HIGHER THAN THE PREVIOUS DAY TO OUTPUT VAR.
+        output += "\n[CASH SURPLUS] CASH ON EACH DAY IS HIGHER THAN THE PREVIOUS DAY"
+
+        #FORMATTED STRING APPENDED TO SHOW THE DAY OF THE HIGHEST SURPLUS & AMT OF HIGHEST SURPLUS TO OUTPUT VAR.
+        output += f"\n[HIGHEST CASH SURPLUS] DAY: {surplus_day}, AMOUNT: SGD{highest_surplus}"
+
+    #OPENS WRITE MODE IN 'SUMMARY_REPORT.TXT' FILE 
+    with fp_write.open(mode="w", encoding="UTF-8") as summary_file:
+
+        #WRITES OUTPUT VARIABLE TO SUMMARY_REPORT.TXT" FILE 
+        summary_file.write(output)
+
+    return output
+
+
+#NAMING FUNCTION TO DOUBLE-CHECK ACTUAL OUTPUT
+print(cashOnHand_function())
